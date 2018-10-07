@@ -1,66 +1,61 @@
-import React , {Component ,}from "react";
-import { StyleSheet, Text, View , Container,Platform} from "react-native";
-import { MapView,Constants, Location, Permissions } from "expo";
-import { Marker } from 'react-native-maps';
-import { TabNavigator } from "react-navigation";
+import React, { Component } from 'react';
+import { Platform, Text, View, StyleSheet } from 'react-native';
+import { Constants, Location, Permissions , MapView } from 'expo';
 
-class LocationA extends Component {
-  constructor(props) {
-    super(props);
+export default class App extends Component {
+  state = {
+    location: null,
+    errorMessage: null,
+  };
 
-    this.state = {
-      latitude: null,
-      longitude: null,
-      error:null,
-    };
-  }
-
-  componentDidMount() {console.log(Permissions);
+  componentWillMount() {
     if (Platform.OS === 'android' && !Constants.isDevice) {
-      
       this.setState({
         errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
       });
     } else {
-      //this._getLocationAsync();
-      console.log(navigator.geolocation);
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          console.log("wokeeey");
-          console.log(position);
-          this.setState({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            error: null,
-          });
-        },
-        (error) => {
-          console.log(error);
-          this.setState({ error: error.message })},
-        { enableHighAccuracy: true, timeout: 200000, maximumAge: 1000 },
-      );
+      this._getLocationAsync();
     }
+  }
 
-   }
-   _getLocationAsync = async () => {
+  _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== 'granted') {
       this.setState({
         errorMessage: 'Permission to access location was denied',
       });
     }
-    console.log("antes de pedir ubicacion");
+
     let location = await Location.getCurrentPositionAsync({});
-    console.log(location);
     this.setState({ location });
+    console.log(this.state);
   };
 
   render() {
+    let text = 'Waiting..';
+    if (this.state.errorMessage) {
+      text = this.state.errorMessage;
+    } else if (this.state.location) {
+      return (
+        <MapView 
+      style={{ flex: 1 }}
+      region={{
+        latitude: this.state.location.coords.latitude,
+        longitude: this.state.location.coords.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      }}  >
+        {!!this.state.location.coords.latitude && !!this.state.location.coords.longitude && <MapView.Marker
+         coordinate={{"latitude":this.state.location.coords.latitude,"longitude":this.state.location.coords.longitude}}
+         title={"Your Location"}
+       />} 
+        
+  </MapView>
+      );
+    } 
     return (
-      <View>
-        <Text> {this.state.latitude} </Text>
-        <Text> {this.state.longitude} </Text>
-        <Text> {this.state.error} </Text>
+      <View style={styles.container}>
+        <Text style={styles.paragraph}>{text}</Text>
       </View>
     );
   }
@@ -68,21 +63,15 @@ class LocationA extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'flex-end',
+    flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#ecf0f1',
   },
-  map: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+  paragraph: {
+    margin: 24,
+    fontSize: 18,
+    textAlign: 'center',
   },
 });
-
-export default LocationA;
