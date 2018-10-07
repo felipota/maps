@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "kiwi",
+    "description": "A very interesting project.",
+    "slug": "kiwi",
+    "privacy": "public",
+    "sdkVersion": "30.0.0",
+    "platforms": ["android"],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "icon": "./map.png",
+      "package": "com.felipecardenas.maptest",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBan4uo5YcTJF6gq_cUxdTMFXCmC--ObI8"
+        }
+      }
+    }
+  }
+}
