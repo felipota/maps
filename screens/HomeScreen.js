@@ -74,6 +74,7 @@ export default class HomeScreen extends React.Component {
     })
     .catch(error => {console.warn(error)
       alert(`se guardo la dirección, ${this.state.adress}! ahora pasara al mapa.`);
+      this.props.navigation.navigate('Map')
     });
   };
   
