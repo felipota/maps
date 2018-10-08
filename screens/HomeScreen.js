@@ -1,4 +1,5 @@
 import React from 'react';
+import Geocoder from 'react-native-geocoding';
 import {
   Image,
   Platform,
@@ -7,16 +8,20 @@ import {
   Text,
   TouchableOpacity,
   View,
+  TextInput,
 } from 'react-native';
 import { WebBrowser } from 'expo';
 
 import { MonoText } from '../components/StyledText';
-
+Geocoder.init('AIzaSyBan4uo5YcTJF6gq_cUxdTMFXCmC--ObI8');
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
-
+ 
+  state = {
+    adress: '',
+  };
   render() {
     return (
       <View style={styles.container}>
@@ -32,70 +37,46 @@ export default class HomeScreen extends React.Component {
             />
           </View>
 
-          <View style={styles.getStartedContainer}>
-            {this._maybeRenderDevelopmentModeWarning()}
+          <View >
 
-            <Text style={styles.getStartedText}>Get started by opening</Text>
-
-            <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-              <MonoText style={styles.codeHighlightText}>screens/HomeScreen.js</MonoText>
-            </View>
 
             <Text style={styles.getStartedText}>
-              hola mundo.
-            </Text>
+              escriba dirección..
+            </Text> 
+            <TextInput
+          style={styles.input}
+          value={this.state.adress}
+          onChangeText={adress => this.setState({adress})}
+          ref={ref => {this._adressInput = ref}}
+          placeholder="Direccion"
+          autoFocus={true}
+          autoCapitalize="words"
+          autoCorrect={true}
+          keyboardType="default"
+          returnKeyType="send"
+          onSubmitEditing={this._submit}
+          blurOnSubmit={false}
+        />
           </View>
-
-          <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              <Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
-            </TouchableOpacity>
-          </View>
+ 
+      
         </ScrollView>
 
-        <View style={styles.tabBarInfoContainer}>
-          <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
-
-          <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-            <MonoText style={styles.codeHighlightText}>navigation/MainTabNavigator.js</MonoText>
-          </View>
-        </View>
       </View>
     );
   }
-
-  _maybeRenderDevelopmentModeWarning() {
-    if (__DEV__) {
-      const learnMoreButton = (
-        <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
-          Learn more
-        </Text>
-      );
-
-      return (
-        <Text style={styles.developmentModeText}>
-          Development mode is enabled, your app will be slower but you can use useful development
-          tools. {learnMoreButton}
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.developmentModeText}>
-          You are not in development mode, your app will run at full speed.
-        </Text>
-      );
-    }
-  }
-
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
+  _submit = () => {
+  Geocoder.from(this.state.adress)
+    .then(json => {
+      var location = json.results[0].geometry.location;
+      console.log(location);
+      alert(`se guardo la dirección, ${this.state.adress}! ahora pasara al mapa.`);
+    })
+    .catch(error => {console.warn(error)
+      alert(`se guardo la dirección, ${this.state.adress}! ahora pasara al mapa.`);
+    });
   };
-
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    );
-  };
+  
 }
 
 const styles = StyleSheet.create({
@@ -127,10 +108,10 @@ const styles = StyleSheet.create({
   },
   getStartedContainer: {
     alignItems: 'center',
-    marginHorizontal: 50,
+    marginHorizontal: 5,
   },
   homeScreenFilename: {
-    marginVertical: 7,
+    marginVertical: 2,
   },
   codeHighlightText: {
     color: 'rgba(96,100,109, 0.8)',
@@ -185,4 +166,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#2e78b7',
   },
+  input: {
+    margin: 10,
+    marginBottom: 0,
+    height: 34,
+    paddingHorizontal: 10,
+    borderRadius: 2,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    fontSize: 16,
+  },
 });
+
